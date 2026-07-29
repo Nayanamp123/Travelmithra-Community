@@ -37,6 +37,9 @@ validateDatabaseUrl(databaseUrl);
 
 const pool = new Pool({
   connectionString: databaseUrl,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export async function queryDatabase<T extends Record<string, unknown> = Record<string, unknown>>(
