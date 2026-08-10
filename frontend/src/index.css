@@ -2103,6 +2103,243 @@ nav a.active {
   }
 }
 
+/* Operations console */
+.crm-page { width: min(1280px, 100%); margin: 0 auto; color: #17202a; background: #f8fafb; min-height: calc(100vh - 48px); padding: 26px 34px 60px; border-radius: 18px; }
+.crm-topbar, .crm-toolbar, .report-hero { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.crm-topbar { padding-bottom:24px; border-bottom:1px solid #e6eaee; }.crm-topbar h2 { margin:0; color:#17202a; font-size:2rem; }.crm-subtitle,.crm-toolbar p,.report-hero p { margin:7px 0 0; color:#7b8792; }.crm-user { display:flex; align-items:center; gap:10px; color:#33404b; }.crm-user small { display:block; color:#8c97a0; font-size:.72rem; }.crm-avatar,.customer-avatar { display:grid; place-items:center; border-radius:50%; background:#f8a535; color:#fff; font-weight:800; }.crm-avatar { width:38px; height:38px; }
+.crm-tabs { display:flex; gap:26px; padding:18px 0 12px; border-bottom:1px solid #e6eaee; }.crm-tabs button { border:0; background:none; color:#83909c; padding:10px 4px; font:inherit; font-weight:700; cursor:pointer; border-bottom:2px solid transparent; }.crm-tabs button.selected { color:#f28e20; border-color:#f28e20; }
+.crm-summary,.report-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:25px 0; }.crm-summary > div,.report-stats > div { background:#fff; border:1px solid #e8edf0; border-radius:10px; padding:19px 22px; box-shadow:0 4px 12px #17202a08; }.crm-summary span,.report-stats span { display:block; color:#83909c; font-size:.85rem; }.crm-summary strong,.report-stats strong { display:block; margin:7px 0 4px; color:#18232c; font-size:1.6rem; }.crm-summary small { color:#8b98a1; }.up { color:#26a269 !important; }
+.crm-toolbar { margin:30px 0 18px; }.crm-toolbar h3,.report-card h3 { margin:0; color:#1b2730; }.crm-toolbar h3 em { display:inline-block; margin-left:8px; padding:3px 9px; border-radius:12px; background:#fff1df; color:#ed8a1d; font-size:.75rem; font-style:normal; }.crm-primary { border:0; border-radius:7px; padding:12px 18px; background:#f28f22; color:#fff; font:inherit; font-weight:800; cursor:pointer; box-shadow:0 5px 12px #f28f2238; }.crm-filters { display:flex; gap:10px; margin-bottom:14px; }.crm-filters input,.crm-filters button,.report-filters input,.report-filters select { border:1px solid #dfe5e9; background:#fff; color:#44515c; border-radius:7px; padding:11px 13px; font:inherit; }.crm-filters input { flex:1; }.crm-filters button { cursor:pointer; }
+.crm-table-wrap,.report-card { overflow:auto; background:#fff; border:1px solid #e6ebee; border-radius:10px; box-shadow:0 4px 12px #17202a08; }.crm-table { width:100%; border-collapse:collapse; min-width:850px; }.crm-table th,.crm-table td { padding:16px 18px; border-bottom:1px solid #eef1f3; text-align:left; font-size:.86rem; white-space:nowrap; }.crm-table th { color:#8b96a0; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }.crm-table td { color:#52606b; }.crm-table td strong { color:#27333d; }.status-pill { display:inline-block; border-radius:20px; padding:5px 10px; font-size:.72rem; font-weight:800; }.status-pill.active { background:#e4f7ee; color:#168657; }.status-pill.inactive { background:#f3e9e9; color:#ad5555; }.toggle-btn { border:0; background:none; color:#e8891c; cursor:pointer; font-weight:700; }.empty-state { padding:30px; color:#82909a; text-align:center; }
+.customer-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }.customer-card { padding:20px; background:#fff; border:1px solid #e6ebee; border-radius:10px; box-shadow:0 4px 12px #17202a08; }.customer-head { display:flex; align-items:center; gap:11px; }.customer-head h3 { margin:0; color:#1c2932; font-size:1rem; }.customer-head small,.customer-card p { color:#87939c; font-size:.82rem; }.customer-head button { margin-left:auto; border:0; background:none; color:#9ba5ac; }.customer-avatar { width:40px; height:40px; }.customer-card p { margin:15px 0 0; }.customer-foot { display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding-top:14px; border-top:1px solid #edf0f2; color:#596672; font-size:.8rem; }
+.report-hero { margin:26px 0 20px; padding:22px; border-radius:10px; background:linear-gradient(120deg,#fff7ed,#fff); border:1px solid #f7dfc2; }.report-hero h3 { margin:0; color:#1c2932; font-size:1.5rem; }.report-filters { display:flex; gap:14px; padding:16px; background:#fff; border:1px solid #e6ebee; border-radius:10px; }.report-filters label { display:grid; gap:6px; color:#7d8993; font-size:.78rem; font-weight:700; }.report-filters input,.report-filters select { min-width:190px; color:#34424d; }.report-card { padding:0 0 10px; }.report-card h3 { padding:20px; }.report-card h3 small { margin-left:10px; color:#96a0a8; font-weight:400; }
+.modal-backdrop { position:fixed; inset:0; display:grid; place-items:center; padding:20px; background:#07142199; z-index:5; }.crm-modal { position:relative; width:min(450px,100%); padding:28px; border-radius:14px; background:#fff; box-shadow:0 20px 60px #0004; }.crm-modal h3 { margin:0 0 20px; color:#17202a; font-size:1.5rem; }.crm-modal label { display:grid; gap:7px; margin:14px 0; color:#5f6c76; font-size:.84rem; font-weight:700; }.crm-modal input { height:44px; border:1px solid #dfe5e9; border-radius:7px; padding:0 12px; font:inherit; }.modal-close { position:absolute; top:14px; right:16px; border:0; background:none; color:#8a969e; font-size:1.6rem; cursor:pointer; }
+@media (max-width:800px) { .crm-page { padding:20px 16px; }.crm-summary,.report-stats,.customer-grid { grid-template-columns:1fr; }.report-filters { flex-direction:column; }.crm-filters { flex-wrap:wrap; }.crm-filters input { flex-basis:100%; }.crm-topbar { align-items:flex-start; flex-direction:column; } }
+.crm-page { background:#f7f9fb; color:#13243a; border-radius:0; padding:30px 38px 70px; }.crm-topbar { border:0; }.crm-topbar h2,.crm-toolbar h2 { font-size:2.45rem; color:#122239; letter-spacing:-.03em; }.crm-toolbar { margin:28px 0 36px; }.crm-toolbar p { font-size:1rem; }.crm-primary { background:#1777b9; border-radius:14px; padding:15px 28px; }.booking-filters { background:#fff; border-radius:22px; padding:26px; box-shadow:0 10px 30px #25354b0d; }.booking-filters input,.booking-filters select { min-width:150px; flex:1; }.crm-table-wrap { border-radius:22px; box-shadow:0 10px 30px #25354b08; }.crm-table th { background:#edf4f8; color:#23364e; font-size:.95rem; text-transform:none; letter-spacing:0; }.crm-table td { padding:21px 24px; color:#13243a; font-size:1rem; }.table-sub { display:block; color:#738398; font-size:.78rem; margin-top:4px; }.table-action { border:0; background:#1777b9; color:#fff; border-radius:10px; padding:13px 17px; margin-right:8px; font-weight:800; cursor:pointer; }.table-action.danger { background:#e5252a; }.customer-table-wrap { margin-top:55px; }.customer-table-wrap .crm-table td { padding:22px 24px; }.status-pill.active { background:#d9f8e5; color:#08763e; }.modal-backdrop { background:#0008; }.crm-modal { border-radius:24px; padding:40px; }.crm-modal h3 { font-size:1.8rem; margin-bottom:28px; }.crm-modal > input,.crm-modal label input,.crm-modal label select { height:62px; border:1px solid #cbd6e2; border-radius:12px; padding:0 18px; width:100%; margin-bottom:20px; font:inherit; color:#223044; background:#fff; }.crm-modal label { margin:0 0 10px; color:#61748d; font-size:1rem; }.crm-modal .crm-primary { width:100%; margin-top:10px; }.booking-drawer { justify-content:flex-end; place-items:stretch; padding:0; }.booking-modal { height:100%; max-height:100vh; overflow:auto; width:min(640px,100%); border-radius:0; padding:32px 36px; }.booking-modal h3 { border-bottom:1px solid #e3e8ee; padding-bottom:30px; }.booking-modal input,.booking-modal select { height:57px; }.two-fields { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+
+/* Admin console theme: orange actions on the Travelmithra dark workspace. */
+.crm-page {
+  background: linear-gradient(180deg, #061a2b 0%, #081d30 100%) !important;
+  color: #f5f7f9 !important;
+}
+.crm-page .crm-topbar h2,
+.crm-page .crm-toolbar h2,
+.crm-page .crm-toolbar h3,
+.crm-page .report-card h3,
+.crm-page .report-hero h3,
+.crm-page .crm-table td,
+.crm-page .crm-table td strong {
+  color: #f5f7f9 !important;
+}
+.crm-page .crm-subtitle,
+.crm-page .crm-toolbar p,
+.crm-page .report-hero p,
+.crm-page .crm-table td,
+.crm-page .table-sub {
+  color: #c4d2e0 !important;
+}
+.crm-page .crm-tabs { border-bottom-color: rgba(255,255,255,.12); }
+.crm-page .crm-tabs button { color: #c4d2e0; }
+.crm-page .crm-tabs button.selected { color: #f7941d; border-color: #f7941d; }
+.crm-page .crm-primary,
+.crm-page .table-action,
+.crm-page .toggle-btn {
+  background: #f7941d !important;
+  color: #101820 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 800;
+}
+.crm-page .crm-primary:hover,
+.crm-page .table-action:hover { background: #ffad3d !important; }
+.crm-page .crm-summary > div,
+.crm-page .report-stats > div,
+.crm-page .crm-table-wrap,
+.crm-page .report-card,
+.crm-page .booking-filters,
+.crm-page .report-filters {
+  background: #0f304d !important;
+  border-color: rgba(255,255,255,.11) !important;
+  box-shadow: none !important;
+}
+.crm-page .crm-summary span,
+.crm-page .report-stats span,
+.crm-page .crm-summary small { color: #c4d2e0 !important; }
+.crm-page .crm-summary strong,
+.crm-page .report-stats strong { color: #fff !important; }
+.crm-page .crm-table th { background: #163d5e !important; color: #fff !important; }
+.crm-page .crm-table td { border-bottom-color: rgba(255,255,255,.1) !important; }
+.crm-page .crm-filters input,
+.crm-page .crm-filters select,
+.crm-page .report-filters input,
+.crm-page .report-filters select {
+  background: #163d5e !important;
+  border-color: rgba(255,255,255,.18) !important;
+  color: #fff !important;
+}
+.crm-page .customer-card { background: #0f304d; border-color: rgba(255,255,255,.11); }
+.crm-page .customer-card h3,
+.crm-page .customer-card p,
+.crm-page .customer-foot { color: #fff; }
+.crm-page .report-hero { background: #0f304d; border-color: rgba(255,255,255,.11); }
+.crm-page .crm-modal { background: #0f304d; color: #fff; }
+.crm-page .crm-modal h3 { color: #fff; }
+.crm-page .crm-modal input,
+.crm-page .crm-modal select { background: #163d5e; border-color: rgba(255,255,255,.2); color: #fff; }
+.crm-page .crm-modal label { color: #c4d2e0; }
+
+/* Booking creation uses a full-height right drawer, matching the operations UI. */
+.crm-page .booking-drawer {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+  overflow: hidden;
+}
+
+.crm-page .booking-modal {
+  width: min(650px, 100vw);
+  height: 100vh;
+  max-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 38px 34px;
+  border-radius: 0;
+  background: #f8fafc;
+  color: #13243a;
+}
+
+.crm-page .booking-modal h3 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 -38px 28px;
+  padding: 38px 38px 30px;
+  border-bottom: 1px solid #e3e8ee;
+  background: #f8fafc;
+  color: #122239;
+  font-size: 1.8rem;
+}
+
+.crm-page .booking-modal .modal-close {
+  position: sticky;
+  float: right;
+  z-index: 2;
+  top: 25px;
+  margin: 0 -18px -58px 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #edf3f8;
+  color: #5f7895;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.crm-page .booking-modal label { color: #61748d; }
+.crm-page .booking-modal input,
+.crm-page .booking-modal select {
+  background: #fff;
+  color: #223044;
+  border-color: #cbd6e2;
+}
+.crm-page .booking-modal .crm-primary {
+  min-height: 60px;
+  margin-top: 18px;
+  border-radius: 12px;
+  background: #1777b9 !important;
+  color: #fff !important;
+}
+
+/* Dedicated admin pages use the supplied white and blue visual system. */
+.crm-page { background: #f7f9fb; color: #13243a; }
+.crm-page .crm-topbar h2,
+.crm-page .crm-toolbar h2,
+.crm-page .report-hero h3 { color: #122239 !important; }
+.crm-page .crm-subtitle,
+.crm-page .crm-toolbar p,
+.crm-page .report-hero p,
+.crm-page .crm-table td,
+.crm-page .table-sub { color: #61748d !important; }
+.crm-page .crm-primary,
+.crm-page .table-action { background: #1777b9 !important; color: #fff !important; border-radius: 10px !important; }
+.crm-page .crm-summary > div,
+.crm-page .report-stats > div,
+.crm-page .crm-table-wrap,
+.crm-page .report-card,
+.crm-page .booking-filters,
+.crm-page .report-filters,
+.crm-page .report-hero { background: #fff !important; border-color: #d9e1e8 !important; box-shadow: 0 10px 30px rgba(37,53,75,.08) !important; }
+.crm-page .crm-table th { background: #edf4f8 !important; color: #23364e !important; }
+.crm-page .crm-filters input,
+.crm-page .crm-filters select,
+.crm-page .report-filters input,
+.crm-page .report-filters select { background: #fff !important; border-color: #cbd6e2 !important; color: #223044 !important; }
+
+@media (max-width: 650px) {
+  .crm-page .booking-modal { padding-left: 22px; padding-right: 22px; }
+  .crm-page .booking-modal h3 { margin-left: -22px; margin-right: -22px; padding-left: 22px; padding-right: 22px; }
+  .crm-page .booking-modal .modal-close { margin-right: -8px; }
+}
+
+/* Consistent table grid for Customers and Sales Reports. */
+.crm-page .crm-table-wrap { width: 100%; overflow-x: auto; }
+.crm-page .crm-table { width: 100%; min-width: 960px; table-layout: fixed; border-collapse: collapse; }
+.crm-page .crm-table th,
+.crm-page .crm-table td { vertical-align: middle; text-align: left; }
+.crm-page .crm-table th { height: 60px; padding: 0 22px; white-space: nowrap; }
+.crm-page .crm-table td { height: 76px; padding: 18px 22px; border-bottom: 1px solid #d9e1e8; }
+.crm-page .crm-table th:nth-child(1) { width: 22%; }
+.crm-page .crm-table th:nth-child(2) { width: 18%; }
+.crm-page .crm-table th:nth-child(3) { width: 16%; }
+.crm-page .crm-table th:nth-child(4) { width: 12%; }
+.crm-page .crm-table th:nth-child(5) { width: 12%; }
+.crm-page .crm-table th:last-child { width: 20%; }
+.crm-page .crm-table td:last-child { white-space: nowrap; }
+.crm-page .crm-table td:last-child .table-action { margin: 0 6px 0 0; }
+.crm-page .customer-table-wrap { margin-top: 32px; }
+.crm-page .report-card { margin-top: 28px; padding: 26px; }
+.crm-page .report-card > h3 { margin: 0 0 18px; color: #122239; }
+.crm-page .report-card > h3 small { float: right; color: #61748d; font-size: .8rem; font-weight: 600; }
+.crm-page .report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
+.crm-page .report-stats > div { min-height: 112px; padding: 22px 24px; border: 1px solid #d9e1e8; border-radius: 14px; }
+.crm-page .report-stats span { display: block; margin-bottom: 8px; color: #61748d !important; }
+.crm-page .report-stats strong { color: #122239 !important; font-size: 1.65rem; }
+@media (max-width: 760px) { .crm-page .report-stats { grid-template-columns: 1fr; } .crm-page .report-card > h3 small { float: none; display: block; margin-top: 6px; } }
+
+/* Admin shell: shared spacing, type scale, and predictable page geometry. */
+.page-layout.authenticated { grid-template-columns: 280px minmax(0, 1fr); background: #f4f7fa; }
+.page-layout.authenticated .main-content { width: 100%; max-width: none; min-width: 0; padding: 0; margin: 0; }
+.page-layout.authenticated .sidebar { width: 280px; min-width: 280px; min-height: 100vh; }
+.crm-page { width: 100%; min-height: 100vh; margin: 0; padding: 36px 52px 64px; border-radius: 0; overflow-x: hidden; }
+.crm-page, .crm-page button, .crm-page input, .crm-page select { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.crm-topbar { min-height: 76px; padding: 0 0 26px; border-bottom: 1px solid #dce4eb; }
+.crm-topbar h2, .crm-toolbar h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; font-weight: 800; letter-spacing: -.025em; }
+.crm-subtitle, .crm-toolbar p, .report-hero p { font-size: 1rem; line-height: 1.5; }
+.crm-toolbar { min-height: 72px; margin: 34px 0 24px; align-items: center; }
+.crm-primary { min-height: 48px; padding: 0 22px; font-size: .95rem; white-space: nowrap; }
+.crm-filters, .report-filters { align-items: center; gap: 14px; padding: 22px; }
+.crm-filters input, .crm-filters select, .report-filters input, .report-filters select { min-height: 48px; font-size: .95rem; }
+.crm-table-wrap { width: 100%; margin-top: 20px; border-radius: 14px; }
+.crm-table { min-width: 1180px; table-layout: auto; }
+.crm-table th { height: 58px; padding: 0 22px; font-size: .9rem; font-weight: 800; }
+.crm-table td { height: 78px; padding: 18px 22px; font-size: .95rem; line-height: 1.35; }
+.crm-table td strong { font-weight: 750; }
+.crm-table td:last-child { min-width: 280px; }
+.table-action { min-height: 42px; padding: 0 14px; font-size: .86rem; white-space: nowrap; }
+.report-hero { min-height: 132px; padding: 28px 30px; border-radius: 14px; }
+.report-filters { display: flex; flex-wrap: wrap; margin-top: 22px; border-radius: 14px; }
+.report-filters label { display: grid; gap: 8px; min-width: 190px; color: #526a84; font-size: .85rem; font-weight: 750; }
+.report-stats { margin: 24px 0 0; }
+.report-card { overflow-x: auto; }
+@media (max-width: 900px) {
+  .page-layout.authenticated { grid-template-columns: 1fr; }
+  .page-layout.authenticated .sidebar { width: 100%; min-width: 0; min-height: auto; }
+  .crm-page { padding: 28px 22px 48px; }
+  .crm-toolbar { align-items: flex-start; flex-direction: column; }
+  .crm-primary { align-self: stretch; }
+}
+
 /* Edit profile v2 */
 .ep-page {
   width: min(980px, 100%);
@@ -2399,6 +2636,13 @@ nav a.active {
   opacity: 0.6;
 }
 
+/* Final admin surface reset */
+.crm-page { background: #f7f9fb !important; color: #13243a !important; opacity: 1 !important; filter: none !important; text-shadow: none !important; }
+.crm-page::before, .crm-page::after, .crm-page *::before, .crm-page *::after { opacity: 1; }
+.crm-page .crm-topbar h2, .crm-page .crm-toolbar h2, .crm-page .crm-toolbar h3, .crm-page .report-hero h3, .crm-page .report-card h3, .crm-page .crm-table td, .crm-page .crm-table td strong { color: #122239 !important; }
+.crm-page .crm-subtitle, .crm-page .crm-toolbar p, .crm-page .report-hero p, .crm-page .table-sub { color: #61748d !important; }
+.crm-page .crm-summary > div, .crm-page .report-stats > div, .crm-page .crm-table-wrap, .crm-page .report-card, .crm-page .booking-filters, .crm-page .report-filters, .crm-page .report-hero { background: #fff !important; }
+
 @media (max-width: 850px) {
   .ep-layout {
     grid-template-columns: 1fr;
@@ -2453,4 +2697,80 @@ nav a.active {
     display: grid;
     grid-template-columns: 1fr;
   }
+}
+
+/* Final admin surface reset: prevent legacy translucent theme rules from
+   showing through the current page. */
+.crm-page { background: #f7f9fb !important; color: #13243a !important; opacity: 1 !important; filter: none !important; text-shadow: none !important; }
+.crm-page::before, .crm-page::after, .crm-page *::before, .crm-page *::after { opacity: 1; }
+.crm-page .crm-topbar h2, .crm-page .crm-toolbar h2, .crm-page .crm-toolbar h3, .crm-page .report-hero h3, .crm-page .report-card h3, .crm-page .crm-table td, .crm-page .crm-table td strong { color: #122239 !important; }
+.crm-page .crm-subtitle, .crm-page .crm-toolbar p, .crm-page .report-hero p, .crm-page .table-sub { color: #61748d !important; }
+.crm-page .crm-summary > div, .crm-page .report-stats > div, .crm-page .crm-table-wrap, .crm-page .report-card, .crm-page .booking-filters, .crm-page .report-filters, .crm-page .report-hero { background: #fff !important; }
+
+/* Final admin surface reset: prevent the legacy translucent theme from
+   showing through the current page. */
+.crm-page {
+  background: #f7f9fb !important;
+  color: #13243a !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+.crm-page::before,
+.crm-page::after,
+.crm-page *::before,
+.crm-page *::after { opacity: 1; }
+.crm-page .crm-topbar h2,
+.crm-page .crm-toolbar h2,
+.crm-page .crm-toolbar h3,
+.crm-page .report-hero h3,
+.crm-page .report-card h3,
+.crm-page .crm-table td,
+.crm-page .crm-table td strong { color: #122239 !important; }
+.crm-page .crm-subtitle,
+.crm-page .crm-toolbar p,
+.crm-page .report-hero p,
+.crm-page .table-sub { color: #61748d !important; }
+.crm-page .crm-summary > div,
+.crm-page .report-stats > div,
+.crm-page .crm-table-wrap,
+.crm-page .report-card,
+.crm-page .booking-filters,
+.crm-page .report-filters,
+.crm-page .report-hero { background: #fff !important; }
+
+/* Keep admin content readable at every screen size. */
+.crm-page,
+.crm-page * { box-sizing: border-box; }
+.crm-page .crm-topbar,
+.crm-page .crm-toolbar,
+.crm-page .report-hero { flex-wrap: wrap; }
+.crm-page .crm-topbar > div:first-child,
+.crm-page .crm-toolbar > div:first-child,
+.crm-page .report-hero > div:first-child { min-width: 0; }
+.crm-page .crm-topbar h2,
+.crm-page .crm-toolbar h2,
+.crm-page .report-hero h3 { overflow-wrap: anywhere; }
+.crm-page .report-stats { align-items: start; }
+.crm-page .report-stats > .report-card { grid-column: 1 / -1; min-height: 0; }
+.crm-page .report-card { min-width: 0; overflow-x: auto; }
+.crm-page .report-card > h3 { line-height: 1.35; }
+.crm-page .report-card > h3 small { float: none; display: block; margin: 6px 0 0; }
+.crm-page .crm-table td:last-child { white-space: normal; min-width: 240px; }
+.crm-page .table-action { margin-bottom: 6px !important; white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .crm-page { padding: 24px 16px 48px; }
+  .crm-page .crm-topbar h2,
+  .crm-page .crm-toolbar h2 { font-size: 1.8rem; }
+  .crm-page .crm-topbar,
+  .crm-page .crm-toolbar,
+  .crm-page .report-hero { align-items: stretch; flex-direction: column; }
+  .crm-page .crm-primary { width: 100%; }
+  .crm-page .booking-filters { padding: 16px; }
+  .crm-page .booking-filters input,
+  .crm-page .booking-filters select { min-width: 100%; flex-basis: 100%; }
+  .crm-page .report-filters { flex-direction: column; }
+  .crm-page .report-filters input,
+  .crm-page .report-filters select { min-width: 100%; width: 100%; }
 }

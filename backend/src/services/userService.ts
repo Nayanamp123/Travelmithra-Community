@@ -57,7 +57,9 @@ export async function registerUser(
   name: string,
   email: string,
   password: string,
-  referralCode?: string | null
+  referralCode?: string | null,
+  role = 'traveler',
+  salesExecutive?: string | null
 ): Promise<User> {
   const existing = await findUserByEmail(email);
   if (existing) {
@@ -84,7 +86,8 @@ export async function registerUser(
     passwordHash,
     referralCode: newReferralCode,
     referredBy,
-    role: 'member',
+    role,
+    salesExecutive,
   });
 }
 

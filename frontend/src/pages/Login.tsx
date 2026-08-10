@@ -45,10 +45,16 @@ export default function Login({ onLogin, onAdminLogin }: LoginProps) {
         return;
       }
 
-      const response = await authAPI.login(email, password);
-      const { user } = response;
-      onLogin(user);
-      navigate('/dashboard');
+      try {
+        const response = await authAPI.login(email, password);
+        const { user } = response;
+        onLogin(user);
+        navigate('/dashboard');
+      } catch (travelerError) {
+        await adminAPI.login(email.trim(), password.trim());
+        onAdminLogin({ username: email.trim(), password: password.trim() });
+        navigate('/admin-management');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
       setLoading(false);
@@ -58,7 +64,7 @@ export default function Login({ onLogin, onAdminLogin }: LoginProps) {
   return (
     <section className="auth-page">
       <div className="card auth-card">
-        <div className="login-mode-tabs" role="tablist" aria-label="Login type">
+        <div className="login-mode-tabs" style={{ display: 'none' }} role="tablist" aria-label="Login type">
           <button
             type="button"
             className={mode === 'traveler' ? 'active' : ''}
@@ -93,8 +99,8 @@ export default function Login({ onLogin, onAdminLogin }: LoginProps) {
           <input
             id="loginEmail"
             name="loginEmail"
-            type={mode === 'admin' ? 'text' : 'email'}
-            placeholder={mode === 'admin' ? 'admin' : 'you@example.com'}
+            type="text"
+            placeholder="Email address or admin username"
             required
           />
           <label htmlFor="loginPassword">Password</label>

@@ -13,6 +13,7 @@ import EditProfile from './pages/EditProfile';
 import AdminManagement from './pages/AdminManagement';
 import travelMithraLogo from './assets/travel-mithra-sidebar-transparent.png';
 import type { AdminCredentials } from './api/client';
+import AdminSidebar from './components/AdminSidebar';
 
 type CurrentUser = {
   id?: number;
@@ -130,6 +131,11 @@ function AppLayout({
           )
         }
       />
+      <Route path="/bookings" element={adminCredentials ? <AdminManagement credentials={adminCredentials} /> : <Navigate to="/login" replace />} />
+      <Route path="/customers" element={adminCredentials ? <AdminManagement credentials={adminCredentials} /> : <Navigate to="/login" replace />} />
+      <Route path="/reports" element={adminCredentials ? <AdminManagement credentials={adminCredentials} /> : <Navigate to="/login" replace />} />
+      <Route path="/rewards" element={adminCredentials ? <AdminManagement credentials={adminCredentials} /> : <Navigate to="/login" replace />} />
+      <Route path="/agents" element={adminCredentials ? <AdminManagement credentials={adminCredentials} /> : <Navigate to="/login" replace />} />
       <Route
         path="/dashboard"
         element={
@@ -206,7 +212,7 @@ function AppLayout({
 
   return (
     <div className={`page-layout${canAccessUserPages ? ' authenticated' : ''}`}>
-      {canAccessUserPages && (
+      {isAdminAuthenticated ? <AdminSidebar onLogout={onLogout} /> : canAccessUserPages && (
         <aside className="sidebar">
           <header className="brand sidebar-brand-header">
             <img
@@ -219,14 +225,20 @@ function AppLayout({
           </header>
 
           <nav>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-            <NavLink to="/community">Community</NavLink>
-            <NavLink to="/features">Features</NavLink>
-            <NavLink to="/support">Support</NavLink>
-            <NavLink to="/profile">Profile</NavLink>
-            {isAdminAuthenticated && (
-              <NavLink to="/admin-management">Admin Management</NavLink>
-            )}
+            {isAdminAuthenticated ? <>
+              <NavLink to="/dashboard">📊 Dashboard</NavLink>
+              <NavLink to="/customers">👥 Customers</NavLink>
+              <NavLink to="/bookings">Bookings</NavLink>
+              <NavLink to="/reports">Reports</NavLink>
+              <NavLink to="/rewards">Rewards</NavLink>
+              <NavLink to="/">🌐 Customer Site</NavLink>
+            </> : <>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/community">Community</NavLink>
+              <NavLink to="/features">Features</NavLink>
+              <NavLink to="/support">Support</NavLink>
+              <NavLink to="/profile">Profile</NavLink>
+            </>}
           </nav>
 
           <button type="button" className="secondary-btn logout-btn" onClick={onLogout}>

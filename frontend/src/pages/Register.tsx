@@ -20,6 +20,7 @@ export default function Register({ onRegister }: RegisterProps) {
   const location = useLocation();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [accountRole, setAccountRole] = useState('traveler');
 
   const referralCodeFromLink =
     new URLSearchParams(location.search).get('ref') ||
@@ -35,6 +36,8 @@ export default function Register({ onRegister }: RegisterProps) {
     const name = (form.elements.namedItem('registerName') as HTMLInputElement).value || 'Traveler';
     const email = (form.elements.namedItem('registerEmail') as HTMLInputElement).value;
     const password = (form.elements.namedItem('registerPassword') as HTMLInputElement).value;
+    const role = (form.elements.namedItem('registerRole') as HTMLSelectElement).value;
+    const salesExecutive = (form.elements.namedItem('salesExecutive') as HTMLSelectElement)?.value || undefined;
     const referralCodeOrLink = (form.elements.namedItem('registerReferral') as HTMLInputElement).value.trim();
     const fileInput = form.elements.namedItem('registerAvatar') as HTMLInputElement;
     const file = fileInput?.files?.[0];
@@ -51,7 +54,7 @@ export default function Register({ onRegister }: RegisterProps) {
       const avatar = typeof reader.result === 'string' ? reader.result : undefined;
 
       try {
-        const response = await authAPI.register(name, email, password, referralCodeOrLink || undefined);
+        const response = await authAPI.register(name, email, password, referralCodeOrLink || undefined, role, salesExecutive);
         onRegister(response.user);
         navigate('/dashboard');
       } catch (err) {
@@ -69,7 +72,7 @@ export default function Register({ onRegister }: RegisterProps) {
       reader.readAsDataURL(file);
     } else {
       try {
-        const response = await authAPI.register(name, email, password, referralCodeOrLink || undefined);
+        const response = await authAPI.register(name, email, password, referralCodeOrLink || undefined, role, salesExecutive);
         onRegister(response.user);
         navigate('/dashboard');
       } catch (err) {
@@ -96,6 +99,22 @@ export default function Register({ onRegister }: RegisterProps) {
 
           <label htmlFor="registerPassword">Password</label>
           <input id="registerPassword" name="registerPassword" type="password" placeholder="Enter password" required />
+
+          <label htmlFor="registerRole">Account type</label>
+          <select id="registerRole" name="registerRole" value={accountRole} onChange={(event) => setAccountRole(event.target.value)}>
+            <option value="traveler">Traveler</option>
+            <option value="admin">Admin</option>
+            <option value="agent">Agent</option>
+            <option value="sales_executive">Sales Executive</option>
+          </select>
+
+          {accountRole === 'sales_executive' && <>
+            <label htmlFor="salesExecutive">Sales Executive</label>
+            <select id="salesExecutive" name="salesExecutive" defaultValue="Aliya">
+              <option value="Aliya">Aliya</option>
+              <option value="Keerthi">Keerthi</option>
+            </select>
+          </>}
 
           <label htmlFor="registerReferral">Referral code or link (optional)</label>
           <input

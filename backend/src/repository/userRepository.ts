@@ -9,6 +9,7 @@ type UserRow = {
   referral_code: string;
   referred_by: number | null;
   role: string;
+  sales_executive?: string | null;
   created_at?: string;
   updated_at?: string;
   referred_by_name?: string | null;
@@ -21,6 +22,7 @@ type CreateUserData = {
   referralCode: string;
   referredBy: number | null;
   role: string;
+  salesExecutive?: string | null;
 };
 
 function mapUserRow(row: UserRow): User {
@@ -61,8 +63,8 @@ export async function findUserByReferralCode(code: string): Promise<{ id: number
 
 export async function insertUser(data: CreateUserData): Promise<User> {
   const result = await queryDatabase<UserRow>(
-    'INSERT INTO users (name, email, password, referral_code, referred_by, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, avatar, referral_code, referred_by, role',
-    [data.name, data.email, data.passwordHash, data.referralCode, data.referredBy, data.role]
+    'INSERT INTO users (name, email, password, referral_code, referred_by, role, sales_executive) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, avatar, referral_code, referred_by, role, sales_executive',
+    [data.name, data.email, data.passwordHash, data.referralCode, data.referredBy, data.role, data.salesExecutive || null]
   );
   return mapUserRow(result.rows[0]);
 }

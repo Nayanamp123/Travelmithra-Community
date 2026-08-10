@@ -1,87 +1,73 @@
-import dotenv from 'dotenv';
-import crypto from 'crypto';
-import pkg from 'pg';
-import type { QueryResult } from 'pg';
-
-dotenv.config();
-
-const { Pool } = pkg;
-
-function validateDatabaseUrl(databaseUrl: string | undefined): void {
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL is missing. Add it to backend/.env before starting the server.');
-  }
-
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(databaseUrl);
-  } catch {
-    throw new Error('DATABASE_URL is not a valid PostgreSQL connection string.');
-  }
-
-  const usesPlaceholderCredentials =
-    parsedUrl.username === 'user' ||
-    parsedUrl.username === 'your_user' ||
-    parsedUrl.password === 'password' ||
-    parsedUrl.password === 'your_password';
-
-  if (usesPlaceholderCredentials) {
-    throw new Error(
-      'DATABASE_URL still contains placeholder credentials. Update backend/.env with your real PostgreSQL username and password.'
-    );
-  }
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.queryDatabase = queryDatabase;
+exports.initializeDatabase = initializeDatabase;
+const dotenv_1 = __importDefault(require("dotenv"));
+const crypto_1 = __importDefault(require("crypto"));
+const pg_1 = __importDefault(require("pg"));
+dotenv_1.default.config();
+const { Pool } = pg_1.default;
+function validateDatabaseUrl(databaseUrl) {
+    if (!databaseUrl) {
+        throw new Error('DATABASE_URL is missing. Add it to backend/.env before starting the server.');
+    }
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(databaseUrl);
+    }
+    catch {
+        throw new Error('DATABASE_URL is not a valid PostgreSQL connection string.');
+    }
+    const usesPlaceholderCredentials = parsedUrl.username === 'user' ||
+        parsedUrl.username === 'your_user' ||
+        parsedUrl.password === 'password' ||
+        parsedUrl.password === 'your_password';
+    if (usesPlaceholderCredentials) {
+        throw new Error('DATABASE_URL still contains placeholder credentials. Update backend/.env with your real PostgreSQL username and password.');
+    }
 }
-
 const databaseUrl = process.env.DATABASE_URL;
 validateDatabaseUrl(databaseUrl);
-
 const pool = new Pool({
-  connectionString: databaseUrl,
-  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+    connectionString: databaseUrl,
+    ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
-
-export async function queryDatabase<T extends Record<string, unknown> = Record<string, unknown>>(
-  text: string,
-  params: any[] = []
-): Promise<QueryResult<T>> {
-  const client = await pool.connect();
-  try {
-    return await client.query<T>(text, params);
-  } finally {
-    client.release();
-  }
-}
-
-async function ensureReferralCodes(): Promise<void> {
-  const existing = await queryDatabase<{ id: number; referral_code: string | null }>(
-    'SELECT id, referral_code FROM users'
-  );
-
-  for (const row of existing.rows) {
-    if (!row.referral_code) {
-      let code = generateReferralCode();
-      let unique = false;
-
-      while (!unique) {
-        const result = await queryDatabase('SELECT id FROM users WHERE referral_code = $1', [code]);
-        if (result.rows.length === 0) {
-          unique = true;
-        } else {
-          code = generateReferralCode();
-        }
-      }
-
-      await queryDatabase('UPDATE users SET referral_code = $1 WHERE id = $2', [code, row.id]);
+async function queryDatabase(text, params = []) {
+    const client = await pool.connect();
+    try {
+        return await client.query(text, params);
     }
-  }
+    finally {
+        client.release();
+    }
 }
-
-function generateReferralCode(): string {
-  return crypto.randomBytes(4).toString('hex');
+async function ensureReferralCodes() {
+    const existing = await queryDatabase('SELECT id, referral_code FROM users');
+    for (const row of existing.rows) {
+        if (!row.referral_code) {
+            let code = generateReferralCode();
+            let unique = false;
+            while (!unique) {
+                const result = await queryDatabase('SELECT id FROM users WHERE referral_code = $1', [code]);
+                if (result.rows.length === 0) {
+                    unique = true;
+                }
+                else {
+                    code = generateReferralCode();
+                }
+            }
+            await queryDatabase('UPDATE users SET referral_code = $1 WHERE id = $2', [code, row.id]);
+        }
+    }
 }
-
-export async function initializeDatabase(): Promise<void> {
-  await queryDatabase(`
+function generateReferralCode() {
+    return crypto_1.default.randomBytes(4).toString('hex');
+}
+async function initializeDatabase() {
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -96,16 +82,15 @@ export async function initializeDatabase(): Promise<void> {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-
-  await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(50)');
-  await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
-  await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'member'");
-  await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS sales_executive VARCHAR(50)");
-  await queryDatabase("UPDATE users SET role = 'member' WHERE role IS NULL");
-  await ensureReferralCodes();
-  await queryDatabase('ALTER TABLE users ALTER COLUMN referral_code SET NOT NULL');
-  await queryDatabase('CREATE UNIQUE INDEX IF NOT EXISTS users_referral_code_unique ON users(referral_code)');
-  await queryDatabase(`
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(50)');
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
+    await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'member'");
+    await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS sales_executive VARCHAR(50)");
+    await queryDatabase("UPDATE users SET role = 'member' WHERE role IS NULL");
+    await ensureReferralCodes();
+    await queryDatabase('ALTER TABLE users ALTER COLUMN referral_code SET NOT NULL');
+    await queryDatabase('CREATE UNIQUE INDEX IF NOT EXISTS users_referral_code_unique ON users(referral_code)');
+    await queryDatabase(`
     DO $$
     BEGIN
       IF NOT EXISTS (
@@ -118,8 +103,7 @@ export async function initializeDatabase(): Promise<void> {
       END IF;
     END $$;
   `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS community_stats (
        id SERIAL PRIMARY KEY,
        total_users INT DEFAULT 0,
@@ -132,16 +116,14 @@ export async function initializeDatabase(): Promise<void> {
        
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS features (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255),
         description TEXT
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS support_info (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255),
@@ -151,8 +133,7 @@ export async function initializeDatabase(): Promise<void> {
         ticket_resolution_time TEXT
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS stories (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255),
@@ -161,8 +142,7 @@ export async function initializeDatabase(): Promise<void> {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS tips (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255),
@@ -171,8 +151,7 @@ export async function initializeDatabase(): Promise<void> {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS support_tickets (
         id SERIAL PRIMARY KEY,
         subject VARCHAR(255),
@@ -182,8 +161,7 @@ export async function initializeDatabase(): Promise<void> {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS admin_customers (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -196,7 +174,7 @@ export async function initializeDatabase(): Promise<void> {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS bookings (
         id VARCHAR(50) PRIMARY KEY,
         customer VARCHAR(255) NOT NULL,
@@ -214,7 +192,7 @@ export async function initializeDatabase(): Promise<void> {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-  await queryDatabase(`
+    await queryDatabase(`
       CREATE TABLE IF NOT EXISTS rewards (
         id SERIAL PRIMARY KEY,
         agent VARCHAR(255) NOT NULL,

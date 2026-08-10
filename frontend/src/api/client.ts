@@ -1,5 +1,13 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001/api';
 
+async function request(url: string, options?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch {
+    throw new Error(`Unable to connect to the backend at ${API_BASE_URL}. Start the backend with "npm run dev" from the backend folder.`);
+  }
+}
+
 export type AdminCredentials = {
   username: string;
   password: string;
@@ -8,13 +16,13 @@ export type AdminCredentials = {
 // ===== USER AUTHENTICATION API =====
 
 export const authAPI = {
-  register: async (name: string, email: string, password: string, referralCode?: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  register: async (name: string, email: string, password: string, referralCode?: string, role?: string, salesExecutive?: string) => {
+    const response = await request(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password, referralCode }),
+      body: JSON.stringify({ name, email, password, referralCode, role, salesExecutive }),
     });
     if (!response.ok) {
       const error = await response.json();
@@ -24,7 +32,7 @@ export const authAPI = {
   },
 
   login: async (email: string, password: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await request(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,8 +58,43 @@ function adminHeaders(credentials: AdminCredentials) {
 }
 
 export const adminAPI = {
+  getBookings: async (credentials: AdminCredentials) => {
+    const response = await fetch(`${API_BASE_URL}/admin/bookings`, { headers: adminHeaders(credentials) });
+    if (!response.ok) throw new Error('Failed to fetch bookings');
+    return response.json();
+  },
+  saveBooking: async (credentials: AdminCredentials, booking: Record<string, unknown>) => {
+    const response = await fetch(`${API_BASE_URL}/admin/bookings`, { method: 'POST', headers: adminHeaders(credentials), body: JSON.stringify(booking) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to save booking'); }
+    return response.json();
+  },
+  deleteBooking: async (credentials: AdminCredentials, id: string) => {
+    const response = await fetch(`${API_BASE_URL}/admin/bookings/${encodeURIComponent(id)}`, { method: 'DELETE', headers: adminHeaders(credentials) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to delete booking'); }
+    return response.json();
+  },
+  getRewards: async (credentials: AdminCredentials) => {
+    const response = await fetch(`${API_BASE_URL}/admin/rewards`, { headers: adminHeaders(credentials) });
+    if (!response.ok) throw new Error('Failed to fetch rewards');
+    return response.json();
+  },
+  issueReward: async (credentials: AdminCredentials, reward: Record<string, unknown>) => {
+    const response = await fetch(`${API_BASE_URL}/admin/rewards`, { method: 'POST', headers: adminHeaders(credentials), body: JSON.stringify(reward) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to issue reward'); }
+    return response.json();
+  },
+  getCustomers: async (credentials: AdminCredentials) => {
+    const response = await fetch(`${API_BASE_URL}/admin/customers`, { headers: adminHeaders(credentials) });
+    if (!response.ok) throw new Error('Failed to fetch customers');
+    return response.json();
+  },
+  createCustomer: async (credentials: AdminCredentials, customer: Record<string, unknown>) => {
+    const response = await fetch(`${API_BASE_URL}/admin/customers`, { method: 'POST', headers: adminHeaders(credentials), body: JSON.stringify(customer) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to save customer'); }
+    return response.json();
+  },
   login: async (username: string, password: string) => {
-    const response = await fetch(`${API_BASE_URL}/admin/login`, {
+    const response = await request(`${API_BASE_URL}/admin/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
