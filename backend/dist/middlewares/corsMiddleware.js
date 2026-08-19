@@ -6,17 +6,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = void 0;
 exports.corsMiddleware = corsMiddleware;
 const cors_1 = __importDefault(require("cors"));
-const allowedOrigins = [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 exports.corsOptions = {
     origin(origin, callback) {
-        if (!origin || allowedOrigins.some((allowedOrigin) => allowedOrigin.test(origin))) {
+        // Allow requests without an Origin header
+        // (Postman, server-to-server requests, etc.)
+        if (!origin) {
             callback(null, true);
             return;
         }
-        callback(new Error('Not allowed by CORS'));
+        if (corsOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error(`CORS: Origin not allowed: ${origin}`));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-username', 'x-admin-password'],
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'x-admin-username',
+        'x-admin-password',
+    ],
+    credentials: true,
 };
 function corsMiddleware(app) {
     app.use((0, cors_1.default)(exports.corsOptions));
