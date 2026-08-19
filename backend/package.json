@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "npx tsc && vite build"
+    "build": "tsc"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
