@@ -7,7 +7,7 @@ exports.removeUser = removeUser;
 const adminRepository_1 = require("../repository/adminRepository");
 async function authenticateAdmin(username, password) {
     const configuredUsername = process.env.ADMIN_USERNAME?.trim() || 'admin';
-    const configuredPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123';
+    const configuredPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin';
     const submittedUsername = username?.trim();
     const submittedPassword = password?.trim();
     if (submittedUsername === configuredUsername && submittedPassword === configuredPassword) {

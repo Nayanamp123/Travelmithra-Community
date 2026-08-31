@@ -44,11 +44,12 @@ export type AdminCredentials = {
 // ===== USER AUTHENTICATION API =====
 
 export const authAPI = {
-  register: async (name: string, email: string, password: string, referralCode?: string, role?: string, salesExecutive?: string) => {
+  register: async (name: string, email: string, password: string, referralCode?: string, role?: string, salesExecutive?: string, credentials?: AdminCredentials) => {
     const response = await request(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(credentials ? adminHeaders(credentials) : {}),
       },
       body: JSON.stringify({ name, email, password, referralCode, role, salesExecutive }),
     });

@@ -76,9 +76,10 @@ export default function AdminManagement({ credentials }: { credentials: AdminCre
 <html>
 <head><meta charset="UTF-8"><title>Receipt - ${booking.customer}</title>
 <style>
-@page{size:11.5in 5.5in;margin:0}
+@page{size:11.5in 5.5in landscape;margin:0}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;font-size:14px;color:#111;padding:24px;line-height:1.2;margin:0;min-height:100vh;overflow:hidden;position:relative}
+html,body{width:1100px;height:520px}
+body{font-family:Arial,sans-serif;font-size:14px;color:#111;padding:24px;line-height:1.2;margin:0;overflow:hidden;position:relative}
 body:before{content:'';position:fixed;top:18px;left:18px;width:calc(100vw - 36px);height:calc(100vh - 36px);border:3px solid #111;box-sizing:border-box;pointer-events:none;z-index:50}
 body:after{display:none}
 .logo{position:absolute;left:10%;top:14%;width:29%;text-align:center;z-index:3}.logo img{width:250px;max-width:100%;height:auto;display:block;margin:0 auto}
@@ -87,11 +88,12 @@ body:after{display:none}
 .info-line{position:absolute;right:4%;top:34%;width:49%;border:2px dotted #333;padding:12px;display:flex;justify-content:space-between;font-family:Georgia,serif;font-size:14px}.info-line strong{font-style:italic;font-weight:400}
 .received-wrap,.details-left,.details-right{position:absolute}.received-wrap{left:3.5%;top:52%;width:37%}.received-wrap .label,.received-wrap .amount{display:none}
 .details-left{left:3.5%;top:52%;width:37%}.details-right{right:4%;top:53%;width:37%}
+.details-left,.details-right{z-index:2}
 .detail-item{display:grid;grid-template-columns:46% 54%;min-height:31px;border:2px dotted #444;border-bottom:0}.detail-item:last-child{border-bottom:2px solid #111}.detail-item .label{padding:6px 9px;font-family:Georgia,serif;font-weight:400;font-style:italic}.detail-item .value{padding:6px 9px;border-left:2px solid #111}.details-left .detail-item:first-child,.details-left .detail-item:nth-child(4),.details-left .detail-item:nth-child(5),.details-right .detail-item:nth-child(4){border-color:#111}.details-left .detail-item:first-child .label,.details-left .detail-item:nth-child(4) .label,.details-left .detail-item:nth-child(5) .label,.details-right .detail-item:nth-child(4) .label{font-style:italic}
-.thankyou{position:fixed;left:50%;top:57%;width:120px;height:auto;transform:translateX(-50%);z-index:20;object-fit:contain;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.thankyou{position:absolute;left:50%;top:64%;width:88px;height:auto;transform:translateX(-50%);z-index:1;object-fit:contain;print-color-adjust:exact;-webkit-print-color-adjust:exact}
 .thankyou svg{display:block;width:100%;height:100%}.thankyou .stamp-bg{fill:#a9ddf2;stroke:#4b4b4b;stroke-width:2}.thankyou .stamp-ring{fill:none;stroke:#4b4b4b;stroke-width:1.5}.thankyou .stamp-dash{fill:none;stroke:#4b6cc4;stroke-width:1.2;stroke-dasharray:3 3}.thankyou text{font-family:Arial,sans-serif;font-weight:800;fill:#111;letter-spacing:3px}.thankyou .stamp-side{font-size:7px;font-weight:400;letter-spacing:2px}.thankyou .stamp-heart{fill:#f26b2e}.thankyou .stamp-map{fill:#e79b67;opacity:.9}.thankyou .stamp-hand{fill:#e5a475;stroke:#946744;stroke-width:.7}.thankyou .stamp-cuff{fill:#375d8d}
 .footer{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-size:13px}.footer p{margin-bottom:5px}
-@media print{html,body{width:100%;height:100%;margin:0}body{padding:24px;min-height:100vh}}
+@media print{html,body{width:1100px;height:520px;margin:0}body{padding:24px}}
 </style></head>
 <body>
 <div class="logo">
@@ -173,7 +175,7 @@ body:after{display:none}
   <div class="label">Previous Payments</div>
   <div class="value">${money(booking.previous)}/-</div>
 </div>
-<div class="detail-item"><div class="label"></div><div class="value">${booking.remarks || '—'}</div></div>
+<div class="detail-item"><div class="label">Remarks if any</div><div class="value">${booking.remarks || '—'}</div></div>
 </div>
 <div class="footer">
   <p>Note : This is a computer generated document hence doesn't require any signature/stamp.</p>

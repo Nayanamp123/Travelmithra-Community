@@ -5,7 +5,7 @@ function adminAuthMiddleware(req, res, next) {
     const username = req.headers['x-admin-username'];
     const password = req.headers['x-admin-password'];
     const configuredUsername = process.env.ADMIN_USERNAME?.trim() || 'admin';
-    const configuredPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123';
+    const configuredPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin';
     if (typeof username === 'string' &&
         typeof password === 'string' &&
         username === configuredUsername &&

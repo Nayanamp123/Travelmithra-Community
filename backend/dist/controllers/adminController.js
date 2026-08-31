@@ -35,7 +35,7 @@ function isAdminRequest(req) {
     const username = getHeaderValue(req.headers['x-admin-username']);
     const password = getHeaderValue(req.headers['x-admin-password']);
     const adminUsername = process.env.ADMIN_USERNAME?.trim() || 'admin';
-    const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123';
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin';
     return (username === adminUsername &&
         password === adminPassword);
 }
