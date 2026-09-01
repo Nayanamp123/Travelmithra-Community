@@ -19,6 +19,8 @@ function requireAdmin(req, res, next) {
 }
 router.post('/login', (0, asyncHandler_1.asyncHandler)(adminController_1.loginAdmin));
 router.use(adminAuthMiddleware_1.adminAuthMiddleware);
+router.post('/send-otp', (0, asyncHandler_1.asyncHandler)(adminController_2.sendOtp));
+router.post('/verify-otp', (0, asyncHandler_1.asyncHandler)(adminController_2.verifyOtp));
 router.get('/users', (0, asyncHandler_1.asyncHandler)(adminController_1.getUsers));
 router.patch('/users/:userId/role', (0, asyncHandler_1.asyncHandler)(adminController_1.updateUserRole));
 router.delete('/users/:userId', (0, asyncHandler_1.asyncHandler)(adminController_1.deleteUser));

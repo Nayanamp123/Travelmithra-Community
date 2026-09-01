@@ -127,6 +127,16 @@ export const adminAPI = {
     if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to save customer'); }
     return response.json();
   },
+  sendOtp: async (credentials: AdminCredentials, email: string) => {
+    const response = await request('/admin/send-otp', { method: 'POST', headers: adminHeaders(credentials), body: JSON.stringify({ email }) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Failed to send OTP'); }
+    return response.json();
+  },
+  verifyOtp: async (credentials: AdminCredentials, email: string, otp: string) => {
+    const response = await request('/admin/verify-otp', { method: 'POST', headers: adminHeaders(credentials), body: JSON.stringify({ email, otp }) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Invalid OTP'); }
+    return response.json();
+  },
   login: async (username: string, password: string) => {
     const response = await request('/admin/login', {
       method: 'POST',

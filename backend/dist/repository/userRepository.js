@@ -10,6 +10,8 @@ exports.updateUserProfile = updateUserProfile;
 exports.updateUserRole = updateUserRole;
 exports.deleteUserById = deleteUserById;
 exports.referralCodeExists = referralCodeExists;
+exports.findAdminCustomerByCredentials = findAdminCustomerByCredentials;
+exports.findApprovedBookingsForCustomer = findApprovedBookingsForCustomer;
 const database_1 = require("./database");
 function mapUserRow(row) {
     return {
@@ -67,4 +69,32 @@ async function deleteUserById(userId) {
 async function referralCodeExists(code) {
     const result = await (0, database_1.queryDatabase)('SELECT id FROM users WHERE referral_code = $1', [code]);
     return result.rows.length > 0;
+}
+async function findAdminCustomerByCredentials(name, password) {
+    const result = await (0, database_1.queryDatabase)(`SELECT id, name, email, password, active
+     FROM admin_customers
+     WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+       AND password = $2
+       AND active = TRUE
+     LIMIT 1`, [name, password]);
+    const customer = result.rows[0];
+    if (!customer)
+        return null;
+    return {
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        avatar: null,
+        referralCode: '',
+        referredBy: null,
+        role: 'customer',
+    };
+}
+async function findApprovedBookingsForCustomer(name) {
+    const result = await (0, database_1.queryDatabase)(`SELECT id, customer, route, date, amount, received, previous, adults, kids,
+            executive, active, payment_mode AS "paymentMode", remarks
+     FROM bookings
+     WHERE LOWER(TRIM(customer)) = LOWER(TRIM($1)) AND active = TRUE
+     ORDER BY date DESC`, [name]);
+    return result.rows;
 }

@@ -1,5 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pendingOtps = void 0;
+exports.sendOtp = sendOtp;
+exports.verifyOtp = verifyOtp;
 exports.loginAdmin = loginAdmin;
 exports.isAdminRequest = isAdminRequest;
 exports.getUsers = getUsers;
@@ -15,6 +21,33 @@ exports.createReward = createReward;
 exports.updateRewardStatus = updateRewardStatus;
 const adminService_1 = require("../services/adminService");
 const database_1 = require("../repository/database");
+const emailService_1 = require("../services/emailService");
+const crypto_1 = __importDefault(require("crypto"));
+exports.pendingOtps = new Map();
+async function sendOtp(req, res, next) {
+    try {
+        const email = String(req.body.email || '').trim().toLowerCase();
+        if (!email || !/^\S+@\S+\.\S+$/.test(email))
+            return res.status(400).json({ error: 'Valid email is required' });
+        const otp = String(crypto_1.default.randomInt(100000, 1000000));
+        exports.pendingOtps.set(email, { hash: crypto_1.default.createHash('sha256').update(otp).digest('hex'), expiresAt: Date.now() + 10 * 60 * 1000 });
+        await (0, emailService_1.sendOtpEmail)(email, otp);
+        res.json({ message: 'OTP sent to the email address' });
+    }
+    catch (error) {
+        next(error);
+    }
+}
+async function verifyOtp(req, res) {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const otp = String(req.body.otp || '').trim();
+    const saved = exports.pendingOtps.get(email);
+    const valid = Boolean(saved && saved.expiresAt > Date.now() && saved.hash === crypto_1.default.createHash('sha256').update(otp).digest('hex'));
+    if (!valid)
+        return res.status(400).json({ error: 'Invalid or expired OTP' });
+    exports.pendingOtps.delete(email);
+    res.json({ message: 'OTP verified' });
+}
 async function loginAdmin(req, res, next) {
     try {
         const { username, password } = req.body;

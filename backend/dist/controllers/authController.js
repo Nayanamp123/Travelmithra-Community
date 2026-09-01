@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = register;
 exports.login = login;
 const userService_1 = require("../services/userService");
+const userRepository_1 = require("../repository/userRepository");
 async function register(req, res, next) {
     try {
         const { name, email, password, referralCode, role, salesExecutive } = req.body;
@@ -23,12 +24,16 @@ async function register(req, res, next) {
 }
 async function login(req, res, next) {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
+        const { email, username, password } = req.body;
+        const identifier = String(username || email || '').trim();
+        if (!identifier || !password) {
+            return res.status(400).json({ error: 'Email or customer name and password are required' });
         }
-        const user = await (0, userService_1.loginUser)(email, password);
-        res.json({ message: 'Login successful', user });
+        const user = await (0, userService_1.loginUser)(identifier, password);
+        const bookings = user.role === 'customer'
+            ? await (0, userRepository_1.findApprovedBookingsForCustomer)(user.name)
+            : [];
+        res.json({ message: 'Login successful', user, bookings });
     }
     catch (error) {
         next(error);

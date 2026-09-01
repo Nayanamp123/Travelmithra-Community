@@ -72,8 +72,9 @@ async function registerUser(name, email, password, referralCode, role = 'travele
         salesExecutive,
     });
 }
-async function loginUser(email, password) {
-    const user = await (0, userRepository_1.findUserByCredentials)(email, hashPassword(password));
+async function loginUser(identifier, password) {
+    const user = await (0, userRepository_1.findUserByCredentials)(identifier, hashPassword(password))
+        || await (0, userRepository_1.findAdminCustomerByCredentials)(identifier, password);
     if (!user) {
         const error = new Error('Invalid email or password');
         error.status = 401;
