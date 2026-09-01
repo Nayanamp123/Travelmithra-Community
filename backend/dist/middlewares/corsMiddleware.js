@@ -6,10 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = void 0;
 exports.corsMiddleware = corsMiddleware;
 const cors_1 = __importDefault(require("cors"));
-const corsOrigins = (process.env.CORS_ORIGINS || '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+const defaultCorsOrigins = [
+    'http://localhost:5173',
+    'http://localhost:4000',
+    'http://localhost:4002',
+    'https://travelmithra-community-frontend-39psl1crb.vercel.app',
+];
+const corsOrigins = [...defaultCorsOrigins, ...(process.env.CORS_ORIGINS || '')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean)];
 exports.corsOptions = {
     origin(origin, callback) {
         // Allow requests without an Origin header
