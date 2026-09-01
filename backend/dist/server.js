@@ -17,6 +17,13 @@ const app = (0, express_1.default)();
 const port = Number(process.env.PORT || 4000);
 app.use(express_1.default.json());
 (0, corsMiddleware_1.corsMiddleware)(app);
+// Booking/customer reads must never be served from a browser, proxy, or CDN cache.
+app.use((_req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
 app.get('/', (req, res) => {
     res.json({ message: 'Travelmithra backend running' });
 });
@@ -45,18 +52,10 @@ function listenWithFallback(portNumber) {
 }
 async function startServer() {
     try {
-        try {
-            await (0, database_1.initializeDatabase)();
-        }
-        catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-                console.warn('Database unavailable. Starting API in local development mode; database-backed features may be unavailable.');
-                console.warn(error instanceof Error ? error.message : error);
-            }
-            else {
-                throw error;
-            }
-        }
+        // Do not start an apparently healthy API when PostgreSQL is unavailable.
+        // Otherwise the frontend can report a successful-looking session update,
+        // then lose all records on refresh because reads come from no database.
+        await (0, database_1.initializeDatabase)();
         const listeningPort = await listenWithFallback(port);
         console.log(`Server running on http://localhost:${listeningPort}`);
     }
