@@ -30,6 +30,7 @@ router.post('/customers', requireAdmin, adminController_2.createCustomer);
 //BOOKINGS
 router.get('/bookings', requireAdmin, adminController_2.getBookings);
 router.post('/bookings', requireAdmin, adminController_2.createBooking);
+router.patch('/bookings/:bookingId/status', requireAdmin, adminController_2.updateBookingStatus);
 router.delete('/bookings/:bookingId', requireAdmin, adminController_2.deleteBooking);
 // REWARDS
 router.get('/rewards', requireAdmin, adminController_2.getRewards);

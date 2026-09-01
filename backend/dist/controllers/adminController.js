@@ -19,6 +19,7 @@ exports.deleteBooking = deleteBooking;
 exports.getRewards = getRewards;
 exports.createReward = createReward;
 exports.updateRewardStatus = updateRewardStatus;
+exports.updateBookingStatus = updateBookingStatus;
 const adminService_1 = require("../services/adminService");
 const database_1 = require("../repository/database");
 const emailService_1 = require("../services/emailService");
@@ -224,7 +225,10 @@ async function createBooking(req, res) {
                 error: 'Customer, route, date, and executive are required',
             });
         }
-        const id = b.id || `TM-${Date.now()}`;
+        // Never derive a new booking id from the number of rows in the UI. That
+        // value changes after deletes/reloads and can make a new booking overwrite
+        // an older one through ON CONFLICT.
+        const id = b.id || `TM-${Date.now()}-${crypto_1.default.randomInt(1000, 10000)}`;
         const result = await (0, database_1.queryDatabase)(`
       INSERT INTO bookings
         (
@@ -444,5 +448,21 @@ async function updateRewardStatus(req, res) {
         return res.status(500).json({
             error: 'Failed to update reward',
         });
+    }
+}
+async function updateBookingStatus(req, res) {
+    try {
+        const active = Boolean(req.body.active);
+        const result = await (0, database_1.queryDatabase)(`UPDATE bookings SET active = $1 WHERE id = $2
+       RETURNING id, customer, route, date, amount, received, previous, adults,
+                 kids, executive, active, payment_mode AS "paymentMode", remarks,
+                 created_at AS "createdAt"`, [active, req.params.bookingId]);
+        if (!result.rowCount)
+            return res.status(404).json({ error: 'Booking not found' });
+        return res.json(result.rows[0]);
+    }
+    catch (error) {
+        console.error('Update booking status error:', error);
+        return res.status(500).json({ error: 'Failed to update booking status' });
     }
 }
