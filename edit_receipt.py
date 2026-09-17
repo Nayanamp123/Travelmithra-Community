@@ -14,14 +14,14 @@ page.add_redact_annot(fitz.Rect(414, 46, 800, 94), fill=(1, 1, 1))
 page.apply_redactions()
 
 new_header = (
-    "Travel Mithra Holidays\n"
+    "TRAVEL MITHRA HOLIDAYS\n"
     "Old Civil Station Road, Kunnumpuram\n"
     "Kakkanad, Cochin - 682030\n"
     "Kerala, India"
 )
-for y, line in zip((48, 62, 76, 90), new_header.splitlines()):
+for y, line in zip((50, 63, 76, 89), new_header.splitlines()):
     page.insert_text(
-        (415, y), line, fontname="times-bold", fontsize=10.5,
+        (415, y), line, fontname="times-bold", fontsize=9.5,
         color=(0, 0, 0), overlay=True,
     )
 
