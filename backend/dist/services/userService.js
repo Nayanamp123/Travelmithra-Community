@@ -9,6 +9,7 @@ exports.getUserProfile = getUserProfile;
 exports.editUserProfile = editUserProfile;
 exports.listUsers = listUsers;
 exports.changeUserRole = changeUserRole;
+exports.assignUserToTeamLead = assignUserToTeamLead;
 exports.removeUser = removeUser;
 const crypto_1 = __importDefault(require("crypto"));
 const userRepository_1 = require("../repository/userRepository");
@@ -26,7 +27,7 @@ async function generateUniqueReferralCode() {
     return code;
 }
 function generateConsultantId() {
-    return `CONS-${Date.now().toString(36).toUpperCase()}-${crypto_1.default.randomBytes(2).toString('hex').toUpperCase()}`;
+    return `TM-${crypto_1.default.randomInt(100000, 1000000)}`;
 }
 function normalizeReferralCode(referralCode) {
     const value = referralCode?.trim();
@@ -113,6 +114,15 @@ async function listUsers() {
 }
 async function changeUserRole(userId, role) {
     const updated = await (0, userRepository_1.updateUserRole)(userId, role);
+    if (!updated) {
+        const error = new Error('User not found');
+        error.status = 404;
+        throw error;
+    }
+    return updated;
+}
+async function assignUserToTeamLead(userId, salesExecutive) {
+    const updated = await (0, userRepository_1.updateUserSalesExecutive)(userId, salesExecutive);
     if (!updated) {
         const error = new Error('User not found');
         error.status = 404;

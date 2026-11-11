@@ -40,6 +40,8 @@ exports.corsOptions = {
         'x-admin-username',
         'x-admin-password',
         'x-agent-username',
+        'x-team-lead-username',
+        'x-team-lead-password',
         'Cache-Control',
         'Pragma',
     ],

@@ -9,5 +9,6 @@ const userController_1 = require("../controllers/userController");
 const router = express_1.default.Router();
 router.get('/', (0, asyncHandler_1.asyncHandler)(userController_1.getAllUsers));
 router.patch('/:userId/role', (0, asyncHandler_1.asyncHandler)(userController_1.updateRole));
+router.patch('/:userId/team-lead', (0, asyncHandler_1.asyncHandler)(userController_1.updateSalesExecutive));
 router.delete('/:userId', (0, asyncHandler_1.asyncHandler)(userController_1.deleteUser));
 exports.default = router;

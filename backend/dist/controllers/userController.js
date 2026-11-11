@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllUsers = getAllUsers;
 exports.updateRole = updateRole;
 exports.deleteUser = deleteUser;
+exports.updateSalesExecutive = updateSalesExecutive;
 const userService_1 = require("../services/userService");
 async function getAllUsers(req, res, next) {
     try {
@@ -32,6 +33,17 @@ async function deleteUser(req, res, next) {
         const userId = Number(req.params.userId);
         await (0, userService_1.removeUser)(userId);
         res.json({ message: 'User deleted successfully' });
+    }
+    catch (error) {
+        next(error);
+    }
+}
+async function updateSalesExecutive(req, res, next) {
+    try {
+        const userId = Number(req.params.userId);
+        const salesExecutive = typeof req.body.salesExecutive === 'string' ? req.body.salesExecutive.trim() : null;
+        const user = await (0, userService_1.assignUserToTeamLead)(userId, salesExecutive);
+        res.json({ message: 'Team Lead assignment updated successfully', user });
     }
     catch (error) {
         next(error);
