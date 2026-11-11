@@ -36,4 +36,5 @@ router.delete('/bookings/:bookingId', requireAdmin, adminController_2.deleteBook
 router.get('/rewards', requireAdmin, adminController_2.getRewards);
 router.post('/rewards', requireAdmin, adminController_2.createReward);
 router.patch('/rewards/:rewardId/status', requireAdmin, adminController_2.updateRewardStatus);
+router.delete('/rewards/:rewardId', requireAdmin, (0, asyncHandler_1.asyncHandler)(adminController_2.deleteReward));
 exports.default = router;

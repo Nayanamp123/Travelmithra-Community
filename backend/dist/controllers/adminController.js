@@ -19,6 +19,7 @@ exports.deleteBooking = deleteBooking;
 exports.getRewards = getRewards;
 exports.createReward = createReward;
 exports.updateRewardStatus = updateRewardStatus;
+exports.deleteReward = deleteReward;
 exports.updateBookingStatus = updateBookingStatus;
 const adminService_1 = require("../services/adminService");
 const database_1 = require("../repository/database");
@@ -448,6 +449,18 @@ async function updateRewardStatus(req, res) {
         return res.status(500).json({
             error: 'Failed to update reward',
         });
+    }
+}
+async function deleteReward(req, res) {
+    try {
+        const result = await (0, database_1.queryDatabase)('DELETE FROM rewards WHERE id = $1 RETURNING id', [req.params.rewardId]);
+        if (!result.rowCount)
+            return res.status(404).json({ error: 'Reward not found' });
+        return res.json({ message: 'Reward deleted', id: result.rows[0].id });
+    }
+    catch (error) {
+        console.error('Delete reward error:', error);
+        return res.status(500).json({ error: 'Failed to delete reward' });
     }
 }
 async function updateBookingStatus(req, res) {

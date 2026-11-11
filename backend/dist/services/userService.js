@@ -25,6 +25,9 @@ async function generateUniqueReferralCode() {
     }
     return code;
 }
+function generateConsultantId() {
+    return `CONS-${Date.now().toString(36).toUpperCase()}-${crypto_1.default.randomBytes(2).toString('hex').toUpperCase()}`;
+}
 function normalizeReferralCode(referralCode) {
     const value = referralCode?.trim();
     if (!value) {
@@ -45,10 +48,10 @@ function normalizeReferralCode(referralCode) {
         return value;
     }
 }
-async function registerUser(name, email, password, referralCode, role = 'traveler', salesExecutive) {
-    const existing = await (0, userRepository_1.findUserByEmail)(email);
+async function registerUser(name, username, phone, password, avatar, referralCode, termsAccepted = false, role = 'agent', salesExecutive, consultantId) {
+    const existing = await (0, userRepository_1.findUserByEmail)(username);
     if (existing) {
-        const error = new Error('Email already exists');
+        const error = new Error('Username already exists');
         error.status = 400;
         throw error;
     }
@@ -64,7 +67,12 @@ async function registerUser(name, email, password, referralCode, role = 'travele
     const passwordHash = hashPassword(password);
     return (0, userRepository_1.insertUser)({
         name,
-        email,
+        email: username,
+        username,
+        phone,
+        avatar,
+        termsAccepted,
+        consultantId: consultantId || generateConsultantId(),
         passwordHash,
         referralCode: newReferralCode,
         referredBy,

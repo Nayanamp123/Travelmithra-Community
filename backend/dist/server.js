@@ -9,13 +9,16 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const profileRoutes_1 = __importDefault(require("./routes/profileRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
+const agentRoutes_1 = __importDefault(require("./routes/agentRoutes"));
 const corsMiddleware_1 = require("./middlewares/corsMiddleware");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const database_1 = require("./repository/database");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = Number(process.env.PORT || 4000);
-app.use(express_1.default.json());
+// Profile images are compressed in the browser, but allow enough room for the
+// resulting base64 payload during registration and profile updates.
+app.use(express_1.default.json({ limit: '2mb' }));
 (0, corsMiddleware_1.corsMiddleware)(app);
 // Booking/customer reads must never be served from a browser, proxy, or CDN cache.
 app.use((_req, res, next) => {
@@ -31,6 +34,7 @@ app.use('/api/auth', authRoutes_1.default);
 app.use('/api/profile', profileRoutes_1.default);
 app.use('/api/users', userRoutes_1.default);
 app.use('/api/admin', adminRoutes_1.default);
+app.use('/api/agent', agentRoutes_1.default);
 app.use('/admin', adminRoutes_1.default);
 app.use(errorHandler_1.errorHandler);
 function listenWithFallback(portNumber) {

@@ -7,8 +7,10 @@ exports.queryDatabase = queryDatabase;
 exports.initializeDatabase = initializeDatabase;
 const dotenv_1 = __importDefault(require("dotenv"));
 const crypto_1 = __importDefault(require("crypto"));
+const path_1 = __importDefault(require("path"));
 const pg_1 = __importDefault(require("pg"));
-dotenv_1.default.config();
+// Resolve the backend env file independently of the process working directory.
+dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env') });
 const { Pool } = pg_1.default;
 function validateDatabaseUrl(databaseUrl) {
     if (!databaseUrl) {
@@ -29,7 +31,18 @@ function validateDatabaseUrl(databaseUrl) {
         throw new Error('DATABASE_URL still contains placeholder credentials. Update backend/.env with your real PostgreSQL username and password.');
     }
 }
-const databaseUrl = process.env.DATABASE_URL;
+function getDatabaseUrl() {
+    if (process.env.DATABASE_URL?.trim()) {
+        return process.env.DATABASE_URL.trim();
+    }
+    const { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD } = process.env;
+    if (DB_HOST && DB_NAME && DB_USER && DB_PASSWORD) {
+        const port = DB_PORT || '5432';
+        return `postgresql://${encodeURIComponent(DB_USER)}:${encodeURIComponent(DB_PASSWORD)}@${DB_HOST}:${port}/${encodeURIComponent(DB_NAME)}`;
+    }
+    return undefined;
+}
+const databaseUrl = getDatabaseUrl();
 validateDatabaseUrl(databaseUrl);
 const pool = new Pool({
     connectionString: databaseUrl,
@@ -88,6 +101,12 @@ async function initializeDatabase() {
     await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER');
     await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'member'");
     await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS sales_executive VARCHAR(50)");
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(255)');
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50)');
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted BOOLEAN NOT NULL DEFAULT FALSE');
+    await queryDatabase("ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_version VARCHAR(50) NOT NULL DEFAULT 'agent-rules-v1'");
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMP');
+    await queryDatabase('ALTER TABLE users ADD COLUMN IF NOT EXISTS consultant_id VARCHAR(30)');
     await queryDatabase("UPDATE users SET role = 'member' WHERE role IS NULL");
     await ensureReferralCodes();
     await queryDatabase('ALTER TABLE users ALTER COLUMN referral_code SET NOT NULL');
