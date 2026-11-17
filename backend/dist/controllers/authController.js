@@ -1,10 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = register;
 exports.login = login;
+exports.verifyAgentOtp = verifyAgentOtp;
 const userService_1 = require("../services/userService");
 const userRepository_1 = require("../repository/userRepository");
 const teamLeadAuthMiddleware_1 = require("../middlewares/teamLeadAuthMiddleware");
+const crypto_1 = __importDefault(require("crypto"));
+const database_1 = require("../repository/database");
+const emailService_1 = require("../services/emailService");
+const otpHash = (otp) => crypto_1.default.createHash('sha256').update(otp).digest('hex');
 async function register(req, res, next) {
     try {
         const { name, username, phone, password, avatar, referralCode, termsAccepted, consultantId, salesExecutive } = req.body;
@@ -48,7 +56,35 @@ async function login(req, res, next) {
         const bookings = user.role === 'customer'
             ? await (0, userRepository_1.findApprovedBookingsForCustomer)(user.name)
             : [];
+        if (user.role === 'agent' || user.role === 'sales_executive') {
+            if (!user.email)
+                return res.status(400).json({ error: 'No email address is registered for this agent' });
+            const challengeId = crypto_1.default.randomUUID();
+            const otp = String(crypto_1.default.randomInt(100000, 1000000));
+            await (0, database_1.queryDatabase)('INSERT INTO agent_login_otps (challenge_id, user_id, otp_hash, expires_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP + INTERVAL \'10 minutes\')', [challengeId, user.id, otpHash(otp)]);
+            await (0, emailService_1.sendOtpEmail)(user.email, otp);
+            return res.json({ message: 'OTP sent', otpRequired: true, challengeId, maskedEmail: `${String(user.email).slice(0, 2)}***${String(user.email).slice(String(user.email).indexOf('@'))}` });
+        }
         res.json({ message: 'Login successful', user, bookings });
+    }
+    catch (error) {
+        next(error);
+    }
+}
+async function verifyAgentOtp(req, res, next) {
+    try {
+        const { challengeId, otp } = req.body;
+        if (!challengeId || !/^\d{6}$/.test(String(otp)))
+            return res.status(400).json({ error: 'Challenge ID and six-digit OTP are required' });
+        const result = await (0, database_1.queryDatabase)('SELECT o.*, u.id, u.name, u.email, u.phone, u.avatar, u.referral_code, u.referred_by, u.role FROM agent_login_otps o JOIN users u ON u.id = o.user_id WHERE o.challenge_id = $1', [challengeId]);
+        const row = result.rows[0];
+        if (!row || new Date(row.expires_at).getTime() < Date.now() || row.attempts >= 5)
+            return res.status(401).json({ error: 'OTP expired or invalid' });
+        await (0, database_1.queryDatabase)('UPDATE agent_login_otps SET attempts = attempts + 1 WHERE challenge_id = $1', [challengeId]);
+        if (row.otp_hash !== otpHash(String(otp)))
+            return res.status(401).json({ error: 'Invalid OTP' });
+        await (0, database_1.queryDatabase)('DELETE FROM agent_login_otps WHERE challenge_id = $1', [challengeId]);
+        res.json({ message: 'Login successful', user: { id: row.id, name: row.name, email: row.email, phone: row.phone, avatar: row.avatar, referralCode: row.referral_code, referredBy: row.referred_by, role: row.role }, bookings: [] });
     }
     catch (error) {
         next(error);

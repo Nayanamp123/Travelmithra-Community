@@ -39,7 +39,7 @@ async function updateUserSalesExecutive(userId, salesExecutive) {
     return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
 }
 async function findUserByCredentials(email, passwordHash) {
-    const result = await (0, database_1.queryDatabase)('SELECT id, name, email, avatar, referral_code, referred_by, role FROM users WHERE (email = $1 OR username = $1) AND password = $2', [email, passwordHash]);
+    const result = await (0, database_1.queryDatabase)('SELECT id, name, email, phone, avatar, referral_code, referred_by, role FROM users WHERE (email = $1 OR username = $1) AND password = $2', [email, passwordHash]);
     return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
 }
 async function findUserByReferralCode(code) {
