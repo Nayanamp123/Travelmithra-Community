@@ -1,0 +1,60 @@
+import cors from 'cors';
+import type { Express } from 'express';
+
+const defaultCorsOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4000',
+  'http://localhost:4002',
+  'https://travelmithra-community-frontend-39psl1crb.vercel.app',
+  'https://dev.travelmithra.com',
+];
+
+const corsOrigins = [...defaultCorsOrigins, ...(process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)];
+
+export const corsOptions = {
+  origin(
+    origin: string | undefined,
+    callback: (error: Error | null, allow?: boolean) => void
+  ) {
+    // Allow requests without an Origin header
+    // (Postman, server-to-server requests, etc.)
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const isLocalDevelopmentOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+
+    if (corsOrigins.includes(origin) || isLocalDevelopmentOrigin) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS: Origin not allowed: ${origin}`));
+  },
+
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'x-admin-username',
+    'x-admin-password',
+    'x-agent-username',
+    'x-team-lead-username',
+    'x-team-lead-password',
+    'Cache-Control',
+    'Pragma',
+  ],
+
+  credentials: true,
+};
+
+export function corsMiddleware(app: Express) {
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
+}
