@@ -1,0 +1,107 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.findUserByEmail = findUserByEmail;
+exports.updateUserSalesExecutive = updateUserSalesExecutive;
+exports.findUserByCredentials = findUserByCredentials;
+exports.findUserByReferralCode = findUserByReferralCode;
+exports.insertUser = insertUser;
+exports.findUserById = findUserById;
+exports.findAllUsersWithReferrer = findAllUsersWithReferrer;
+exports.updateUserProfile = updateUserProfile;
+exports.updateUserRole = updateUserRole;
+exports.deleteUserById = deleteUserById;
+exports.referralCodeExists = referralCodeExists;
+exports.findAdminCustomerByCredentials = findAdminCustomerByCredentials;
+exports.findApprovedBookingsForCustomer = findApprovedBookingsForCustomer;
+const database_1 = require("./database");
+function mapUserRow(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        phone: row.phone ?? null,
+        avatar: row.avatar ?? null,
+        referralCode: row.referral_code,
+        referredBy: row.referred_by ?? null,
+        role: row.role,
+        salesExecutive: row.sales_executive ?? null,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        referredByName: row.referred_by_name ?? null,
+    };
+}
+async function findUserByEmail(email) {
+    const result = await (0, database_1.queryDatabase)('SELECT id, name, email, avatar, referral_code, referred_by, role FROM users WHERE email = $1', [email]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function updateUserSalesExecutive(userId, salesExecutive) {
+    const result = await (0, database_1.queryDatabase)('UPDATE users SET sales_executive = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, name, email, avatar, referral_code, referred_by, role, sales_executive, created_at, updated_at', [salesExecutive || null, userId]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function findUserByCredentials(email, passwordHash) {
+    const result = await (0, database_1.queryDatabase)('SELECT id, name, email, phone, avatar, referral_code, referred_by, role FROM users WHERE (email = $1 OR username = $1) AND password = $2', [email, passwordHash]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function findUserByReferralCode(code) {
+    const result = await (0, database_1.queryDatabase)('SELECT id FROM users WHERE referral_code = $1', [code]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+}
+async function insertUser(data) {
+    const result = await (0, database_1.queryDatabase)('INSERT INTO users (name, email, username, phone, avatar, password, referral_code, referred_by, role, consultant_id, terms_accepted, terms_version, terms_accepted_at, sales_executive) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP, $13) RETURNING id, name, email, avatar, referral_code, referred_by, role, consultant_id, sales_executive', [data.name, data.email, data.username, data.phone, data.avatar || null, data.passwordHash, data.referralCode, data.referredBy, data.role, data.consultantId, data.termsAccepted, 'agent-rules-v1', data.salesExecutive || null]);
+    return mapUserRow(result.rows[0]);
+}
+async function findUserById(userId) {
+    const result = await (0, database_1.queryDatabase)('SELECT id, name, email, avatar, referral_code, referred_by, role FROM users WHERE id = $1', [userId]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function findAllUsersWithReferrer() {
+    const result = await (0, database_1.queryDatabase)(`SELECT u.id, u.name, u.email, u.avatar, u.phone, u.role, u.sales_executive, u.created_at, u.referral_code, u.referred_by, r.name AS referred_by_name
+     FROM users u
+     LEFT JOIN users r ON u.referred_by = r.id
+     ORDER BY u.name ASC`);
+    return result.rows.map(mapUserRow);
+}
+async function updateUserProfile(userId, name, email, avatar) {
+    const result = await (0, database_1.queryDatabase)('UPDATE users SET name = $1, email = $2, avatar = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id, name, email, avatar, referral_code, referred_by, role', [name, email, avatar ?? null, userId]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function updateUserRole(userId, role) {
+    const result = await (0, database_1.queryDatabase)('UPDATE users SET role = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, name, email, avatar, referral_code, referred_by, role', [role, userId]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function deleteUserById(userId) {
+    const result = await (0, database_1.queryDatabase)('DELETE FROM users WHERE id = $1 RETURNING id, name, email, avatar, referral_code, referred_by, role', [userId]);
+    return result.rows.length > 0 ? mapUserRow(result.rows[0]) : null;
+}
+async function referralCodeExists(code) {
+    const result = await (0, database_1.queryDatabase)('SELECT id FROM users WHERE referral_code = $1', [code]);
+    return result.rows.length > 0;
+}
+async function findAdminCustomerByCredentials(name, password) {
+    const result = await (0, database_1.queryDatabase)(`SELECT id, name, email, password, active
+     FROM admin_customers
+     WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+       AND password = $2
+       AND active = TRUE
+     LIMIT 1`, [name, password]);
+    const customer = result.rows[0];
+    if (!customer)
+        return null;
+    return {
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        avatar: null,
+        referralCode: '',
+        referredBy: null,
+        role: 'customer',
+    };
+}
+async function findApprovedBookingsForCustomer(name) {
+    const result = await (0, database_1.queryDatabase)(`SELECT id, customer, route, date, amount, received, previous, adults, kids,
+            executive, active, payment_mode AS "paymentMode", remarks
+     FROM bookings
+     WHERE LOWER(TRIM(customer)) = LOWER(TRIM($1)) AND active = TRUE
+     ORDER BY date DESC`, [name]);
+    return result.rows;
+}
